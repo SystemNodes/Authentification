@@ -316,7 +316,7 @@ exports.updatePassword = async (req, res) => {
         }
 
         // Encrypt and safe the newpassword
-        const salt = await bycrypt.genSalt(10);
+        const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(newPassword, salt);
         user.password = hashedPassword;
         await user.save();

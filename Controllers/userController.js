@@ -296,6 +296,10 @@ exports.updatePassword = async (req, res) => {
     try {
         const {oldPassword, newPassword, confirmPassword} = req.body;
 
+        const user = await userModel.findOne({
+            email: email.toLowerCase()
+        });
+
         // Validate oldpassword
         const isMatch = await bcrypt.compare(oldPassword, user.password);
         if (!isMatch) {
@@ -313,7 +317,7 @@ exports.updatePassword = async (req, res) => {
 
         // Encrypt and safe the newpassword
         const salt = await bycrypt.genSalt(10);
-        const hashedPassword = await bycrypt.hash(newPassword, salt);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
         user.password = hashedPassword;
         await user.save();
 

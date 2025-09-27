@@ -294,24 +294,28 @@ exports.resetPassword = async (req, res) => {
 
 exports.updatePassword = async (req, res) => {
     try {
+        const userId = req.user.id;
         const {oldPassword, newPassword, confirmPassword} = req.body;
 
-        const user = await userModel.findOne({
-            email: email.toLowerCase()
-        });
-
-        // Validate oldpassword
-        const isMatch = await bcrypt.compare(oldPassword, user.password);
-        if (!isMatch) {
-            return res.status(400).json({
-                message: "Password is not correct!"
-            });
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found!"
+            })
         }
 
         // Check newpassword matches the second entry
         if (newPassword !== confirmPassword) {
             return res.status(400).json({
                 message: "Passwords do not match"
+            });
+        }
+
+        // Validate oldpassword
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({
+                message: "Old password incorrect!"
             });
         }
 
@@ -322,12 +326,40 @@ exports.updatePassword = async (req, res) => {
         await user.save();
 
         res.status(200).json({
-            message: "Password update successful"
+            message: "Password updated successfully"
         });
         
     } catch (error) {
         res.status(500).json({
             error: error.message
         });
+    }
+};
+
+exports.getAll = async (req, res) => {
+    try {
+        const users = await userModel.find();
+
+        res.status(200).json({
+            message: `All users in the database; totalled ${users.length}`,
+            data: users
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            error: error.message
+        }); 
+    }
+};
+
+exports.changePassword = async (req, res) => {
+    try {
+        // Get the user's ID
+        const userId = req.user.id;
+
+    } catch (error) {
+        res.status(500).json({
+            error: error.message
+        }); 
     }
 }

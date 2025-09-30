@@ -1,7 +1,7 @@
 const userModel = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const emailSender = require('../middleware/resend');
+const emailSender = require('../middleware/brevo');
 const { signUpTemplate, verificationTemplate, resetPasswordTemplate } = require('../utils/emailTemplates');
 
 exports.signUp = async (req, res) => {
